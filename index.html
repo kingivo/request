@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Visor Señal Rio Huasco</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+    <script src="leaflet-heat.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+    
+    <!-- CSS -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- Map container -->
+    <div id='map'></div>
+<script>
+let map = L.map('map').setView([-27.32435417175293,-70.23456573486328], 13);
+let osmLayer = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+    maxZoom: 20,
+    subdomains:['mt0','mt1','mt2','mt3']
+}).addTo(map);
+ 
+// GeoJSON from API Rest
+let layer = L.geoJson(null, {
+    onEachFeature: popup
+});
+
+$.getJSON("http://localhost:8080/items",  function (data)  {
+    layer.addData(data);
+    heat.addTo(map);
+});
+
+layer.addTo(map);
+
+var heat = L.heatLayer([
+	[-27.32435417175293,-70.23456573486328, 0.2] // lat, lng, intensity
+], {radius: 25}).addTo(map);
+
+function popup(feature, layer) {
+    layer.bindPopup(`<div>
+                         
+                        <h3>Id-device :${feature.properties.iddevice}</h3>
+                        <h3>longitude :${feature.properties.longitude}</h3>
+                        <h3>latitude  : ${feature.properties.latitude}</h3>
+                        <h3>Rssi : ${feature.properties.rssi}</h3>
+                    </div>`);
+};
+</script>
+</body>
+
+</html>
